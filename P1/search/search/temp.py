@@ -1,5 +1,3 @@
-l = []
-l1 = l+[1]
+f = {(0,0)}
 
-print(l1)
-print(l)
+print((0,0) in f)

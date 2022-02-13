@@ -89,28 +89,24 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     initial_node = {"state": problem.getStartState(), "path": list()}
     frontier = util.Stack()
-    frontier_set = set()
     explored = set()
 
     frontier.push(initial_node)
-    frontier_set.add(problem.getStartState())
 
     while not frontier.isEmpty():
         current_node = frontier.pop()
-        frontier_set.remove(current_node.get("state"))
-        explored.add(current_node.get("state"))
-        if problem.isGoalState(current_node.get("state")):
-            return current_node.get("path")
-        successor_states = problem.getSuccessors(current_node.get("state"))
-        for nextState, action, cost in successor_states:
-            if nextState not in explored and nextState not in frontier_set:
-                frontier.push({"state": nextState, "path": current_node.get("path")+[action]})
-                frontier_set.add(nextState)
+        current_state = current_node.get("state")
+        current_path = current_node.get("path")
+        explored.add(current_state)
+        if problem.isGoalState(current_state):
+            return current_path
+        successors = problem.getSuccessors(current_state)
+        successors.reverse()
+        for next_state, action, cost in successors:
+            if next_state not in explored:
+                frontier.push({"state": next_state, "path": current_node.get("path")+[action]})
     return []
     #TODO: Question answer still left
 
@@ -118,28 +114,21 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     initial_node = {"state": problem.getStartState(), "path": list()}
-    frontier = util.Stack()
-    frontier_set = set()
+    frontier = util.Queue()
     explored = set()
 
     frontier.push(initial_node)
-    frontier_set.add(problem.getStartState())
 
     while not frontier.isEmpty():
         current_node = frontier.pop()
-        frontier_set.remove(current_node.get("state"))
         explored.add(current_node.get("state"))
         if problem.isGoalState(current_node.get("state")):
             return current_node.get("path")
         successor_states = problem.getSuccessors(current_node.get("state"))
         for nextState, action, cost in successor_states:
-            if nextState not in explored and nextState not in frontier_set:
+            if nextState not in explored:
                 frontier.push({"state": nextState, "path": current_node.get("path") + [action]})
-                frontier_set.add(nextState)
 
 
 def uniformCostSearch(problem):
