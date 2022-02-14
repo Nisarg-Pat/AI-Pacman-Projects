@@ -170,7 +170,7 @@ def uniformCostSearch(problem):
                 if next_state not in frontier_map:
                     frontier.push(next_state, state_cost)
                     frontier_map[next_state] = {PATH: state_path, COST: state_cost}
-                elif frontier_map[next_state]["cost"] >= state_cost:
+                elif frontier_map[next_state][COST] > state_cost:
                     frontier.update(next_state, state_cost)
                     frontier_map[next_state] = {PATH: state_path, COST: state_cost}
     return []
@@ -187,7 +187,37 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    PATH = "path"
+    COST = "cost"
+    frontier = util.PriorityQueue()
+    frontier_map = {}
+    explored = set()
+
+    initial_state = problem.getStartState()
+    frontier.push(initial_state, 0+heuristic(initial_state, problem))
+    frontier_map[initial_state] = {PATH: list(), COST: 0}
+
+    while not frontier.isEmpty():
+        current_state = frontier.pop()
+        current_path = frontier_map[current_state][PATH]
+        current_cost = frontier_map[current_state][COST]
+        frontier_map.pop(current_state)
+        explored.add(current_state)
+
+        if problem.isGoalState(current_state):
+            return current_path
+
+        for next_state, action, cost in problem.getSuccessors(current_state):
+            if next_state not in explored:
+                state_path = current_path + [action]
+                state_cost = current_cost + cost
+                if next_state not in frontier_map:
+                    frontier.push(next_state, state_cost+heuristic(next_state, problem))
+                    frontier_map[next_state] = {PATH: state_path, COST: state_cost}
+                elif frontier_map[next_state][COST] > state_cost+heuristic(next_state, problem):
+                    frontier.update(next_state, state_cost+heuristic(next_state, problem))
+                    frontier_map[next_state] = {PATH: state_path, COST: state_cost}
+    return []
 
 
 # Abbreviations
