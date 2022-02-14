@@ -88,8 +88,10 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    initial_node = {"state": problem.getStartState(), "path": list()}
+
+    STATE = "state"
+    PATH = "path"
+    initial_node = {STATE: problem.getStartState(), PATH: list()}
     frontier = util.Stack()
     explored = set()
 
@@ -97,44 +99,81 @@ def depthFirstSearch(problem):
 
     while not frontier.isEmpty():
         current_node = frontier.pop()
-        current_state = current_node.get("state")
-        current_path = current_node.get("path")
-        explored.add(current_state)
-        if problem.isGoalState(current_state):
-            return current_path
-        successors = problem.getSuccessors(current_state)
-        successors.reverse()
-        for next_state, action, cost in successors:
+        explored.add(current_node[STATE])
+        if problem.isGoalState(current_node[STATE]):
+            return current_node[PATH]
+
+        for next_state, action, cost in problem.getSuccessors(current_node[STATE]):
             if next_state not in explored:
-                frontier.push({"state": next_state, "path": current_node.get("path")+[action]})
+                frontier.push({STATE: next_state, PATH: current_node[PATH] + [action]})
+
     return []
-    #TODO: Question answer still left
+    # TODO: Question answer still left
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    initial_node = {"state": problem.getStartState(), "path": list()}
+    STATE = "state"
+    PATH = "path"
+    initial_node = {STATE: problem.getStartState(), PATH: list()}
+
     frontier = util.Queue()
+    frontier_set = set()
     explored = set()
 
     frontier.push(initial_node)
+    frontier_set.add(initial_node[STATE])
 
     while not frontier.isEmpty():
         current_node = frontier.pop()
-        explored.add(current_node.get("state"))
-        if problem.isGoalState(current_node.get("state")):
-            return current_node.get("path")
-        successor_states = problem.getSuccessors(current_node.get("state"))
-        for nextState, action, cost in successor_states:
-            if nextState not in explored:
-                frontier.push({"state": nextState, "path": current_node.get("path") + [action]})
+        frontier_set.remove(current_node[STATE])
+        explored.add(current_node[STATE])
+
+        if problem.isGoalState(current_node[STATE]):
+            return current_node[PATH]
+
+        for next_state, action, cost in problem.getSuccessors(current_node[STATE]):
+            if next_state not in explored and next_state not in frontier_set:
+                frontier.push({STATE: next_state, PATH: current_node.get(PATH) + [action]})
+                frontier_set.add(next_state)
+    return []
 
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    PATH = "path"
+    COST = "cost"
+    frontier = util.PriorityQueue()
+    frontier_map = {}
+    explored = set()
+
+    initial_state = problem.getStartState()
+    frontier.push(initial_state, 0)
+    frontier_map[initial_state] = {PATH: list(), COST: 0}
+
+    while not frontier.isEmpty():
+        current_state = frontier.pop()
+        current_path = frontier_map[current_state][PATH]
+        current_cost = frontier_map[current_state][COST]
+        frontier_map.pop(current_state)
+        explored.add(current_state)
+
+        if problem.isGoalState(current_state):
+            return current_path
+
+        for next_state, action, cost in problem.getSuccessors(current_state):
+            if next_state not in explored:
+                state_path = current_path + [action]
+                state_cost = current_cost + cost
+                if next_state not in frontier_map:
+                    frontier.push(next_state, state_cost)
+                    frontier_map[next_state] = {PATH: state_path, COST: state_cost}
+                elif frontier_map[next_state]["cost"] >= state_cost:
+                    frontier.update(next_state, state_cost)
+                    frontier_map[next_state] = {PATH: state_path, COST: state_cost}
+    return []
 
 
 def nullHeuristic(state, problem=None):
