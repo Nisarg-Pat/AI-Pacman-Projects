@@ -324,8 +324,8 @@ class CornersProblem(search.SearchProblem):
         "*** YOUR CODE HERE ***"
         if state[0] not in self.corners:
             return False
-        for corner in state[1]:
-            if not corner:
+        for visitedCorner in state[1]:
+            if not visitedCorner:
                 return False
         return True
 
@@ -395,27 +395,26 @@ def cornersHeuristic(state, problem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    cornerIndex = problem.cornerIndex
-    count = 0
-    cornerMap = []
+    heuristic = 0
+    current = state[0]
+    visitedCorners = list(state[1])
+
     for i in range(0, 4):
-        cornerMap.append(state[1][i])
-    currentX, currentY = state[0]
-    for i in range(0, 4):
-        minDistance = 100000000000
-        minCorner = (currentX, currentY)
+        minDistance = float("inf")
+        minCorner = current
         for corner in corners:
-            if not cornerMap[cornerIndex[corner]]:
-                distance = abs(currentX - corner[0]) + abs(currentY - corner[1])
+            if not visitedCorners[problem.cornerIndex[corner]]:
+                distance = abs(corner[0] - current[0]) + abs(corner[1] - current[1])
                 if distance < minDistance:
                     minDistance = distance
                     minCorner = corner
-        if minCorner != (currentX, currentY):
-            count = count + minDistance
-            currentX, currentY = minCorner
-        # if not state[1][cornerIndex[corner]]:
-        #     count = abs(state[0][0] - corner[0])+abs(state[0][1] - corner[1])
-    return count
+        if minDistance != float("inf"):
+            heuristic += minDistance
+            current = minCorner
+            visitedCorners[problem.cornerIndex[minCorner]] = True
+        else:
+            break
+    return heuristic
 
 
 class AStarCornersAgent(SearchAgent):
