@@ -519,8 +519,10 @@ def foodHeuristic(state, problem):
     foodList = foodGrid.asList()
 
     for food in foodList:
-        heuristic = max(heuristic, abs(position[0]-food[0])+abs(position[1]-food[1]))
-
+        # heuristic = max(heuristic, abs(position[0]-food[0])+abs(position[1]-food[1]))
+        heuristic = max(heuristic, len(search.bfs(PositionSearchProblem(problem.startingGameState,
+                                                                        start=position, goal=food,
+                                                                        warn=False, visualize=False))))
     return heuristic
 
 
