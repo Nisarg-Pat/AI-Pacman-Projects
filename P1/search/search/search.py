@@ -108,7 +108,15 @@ def depthFirstSearch(problem):
                 frontier.push({STATE: next_state, PATH: current_node[PATH] + [action]})
 
     return []
-    # TODO: Question answer still left
+
+    # P-1 Search - Question 1 Non-Code Questions:
+    # 1) The exploration order is as expected because a path from a single adjacent state is fully explored
+    # before path from another adjacent state is explored.
+    # 2) Pacman does not go through all the explored squares as some explored states lead to a loop or a dead end
+    # and the PATH value will not have directions for such cases.
+    # 3) DFS does not guarantee the least cost solution.
+    # 4) DFS will return a path that it finds out first by fully exploring a single state.
+    # If a longer path is found before the optimal, than that path will be returned.
 
 
 def breadthFirstSearch(problem):
@@ -139,6 +147,8 @@ def breadthFirstSearch(problem):
                 frontier_set.add(next_state)
     return []
 
+    # P-1 Search - Question 2 Non-Code Questions:
+    # BFS returns the least cost solution as the states closest to startState are explored first.
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -175,6 +185,10 @@ def uniformCostSearch(problem):
                     frontier_map[next_state] = {PATH: state_path, COST: state_cost}
     return []
 
+    # P-1 Search - Question 3 Non-Code Questions:
+    # StayEastSearchAgent - cost = 1
+    # StayWestSearchAgent - cost = 68719479864
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -194,7 +208,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     explored = set()
 
     initial_state = problem.getStartState()
-    frontier.push(initial_state, 0+heuristic(initial_state, problem))
+    frontier.push(initial_state, 0 + heuristic(initial_state, problem))
     frontier_map[initial_state] = {PATH: list(), COST: 0}
 
     while not frontier.isEmpty():
@@ -212,12 +226,22 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 state_path = current_path + [action]
                 state_cost = current_cost + cost
                 if next_state not in frontier_map:
-                    frontier.push(next_state, state_cost+heuristic(next_state, problem))
+                    frontier.push(next_state, state_cost + heuristic(next_state, problem))
                     frontier_map[next_state] = {PATH: state_path, COST: state_cost}
-                elif frontier_map[next_state][COST] > state_cost+heuristic(next_state, problem):
-                    frontier.update(next_state, state_cost+heuristic(next_state, problem))
+                elif frontier_map[next_state][COST] > state_cost + heuristic(next_state, problem):
+                    frontier.update(next_state, state_cost + heuristic(next_state, problem))
                     frontier_map[next_state] = {PATH: state_path, COST: state_cost}
     return []
+
+    # P-1 Search - Question 4 Non-Code Questions:
+    # |    openMaze    | Path Cost | Nodes Expanded | Score |
+    # |     dfs        |    298    |       806      |  212  |
+    # |     bfs        |     54    |       682      |  456  |
+    # |     ucs        |     54    |       682      |  456  |
+    # |astar(manhattan)|     54    |       535      |  456  |
+    # dfs does not take the optimal path and pacman traverses long rows which can be skipped.
+    # bfs and ucs works the same as cost function is constant between adjacent states.
+    # astar with manhattan heuristic expands the least number of nodes.
 
 
 # Abbreviations

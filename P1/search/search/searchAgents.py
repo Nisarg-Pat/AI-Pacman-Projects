@@ -297,6 +297,7 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0  # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
+        # Adding mapping of corner to an index.
         self.cornerIndex = {}
         visitedCorners = []
         index = 0
@@ -307,6 +308,8 @@ class CornersProblem(search.SearchProblem):
                 visitedCorners.append(True)
             else:
                 visitedCorners.append(False)
+        # Start stete will be like: ((x, y), (False, False, False, False)) if start state is not a border state.
+        # tuple(visitedCorners) - weather each indexed corner is visited or not.
         self.startState = (self.startingPosition, tuple(visitedCorners))
 
     def getStartState(self):
@@ -322,6 +325,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        # True if currentPosition is one of the borders and all borders are visited.
         if state[0] not in self.corners:
             return False
         for visitedCorner in state[1]:
@@ -356,6 +360,7 @@ class CornersProblem(search.SearchProblem):
             if not self.walls[nextx][nexty]:
                 nextPosition = (nextx, nexty)
                 visitedCorners = []
+                # Changing visitedCorners based on whether nextPosition is a corner
                 for corner in self.corners:
                     visitedCorners.append(state[1][self.cornerIndex[corner]] or nextPosition == corner)
                 nextState = (nextPosition, tuple(visitedCorners))
@@ -395,6 +400,8 @@ def cornersHeuristic(state, problem):
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    # Manhattan cost to the closest unexplored border, then to its next closest unexplored border
+    # and so on for all unexplored borders.
     heuristic = 0
     current = state[0]
     visitedCorners = list(state[1])
@@ -515,14 +522,18 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+    # Heuristic as taking the BFS path length of the farthest food.
+    # Storing the calculated lengths to problem.heuristicInfo for quick access.
     heuristic = 0
     foodList = foodGrid.asList()
 
     for food in foodList:
         # heuristic = max(heuristic, abs(position[0]-food[0])+abs(position[1]-food[1]))
-        heuristic = max(heuristic, len(search.bfs(PositionSearchProblem(problem.startingGameState,
-                                                                        start=position, goal=food,
-                                                                        warn=False, visualize=False))))
+        if not (position, food) in problem.heuristicInfo:
+            problem.heuristicInfo[position, food] = len(search.bfs(PositionSearchProblem(problem.startingGameState,
+                                                                                         start=position, goal=food,
+                                                                                         warn=False, visualize=False)))
+        heuristic = max(heuristic, problem.heuristicInfo[(position, food)])
     return heuristic
 
 
@@ -556,6 +567,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
+        #Returning the bfs path to closest Food.
         return search.bfs(problem)
 
 
