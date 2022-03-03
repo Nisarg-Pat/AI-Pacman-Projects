@@ -244,6 +244,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             self.value = value
             self.action = action
 
+
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
@@ -257,7 +258,40 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        legalMoves = gameState.getLegalActions(0)
+        maxScore = float("-inf")
+        move = None
+        for action in legalMoves:
+            successorGameState = gameState.generateSuccessor(0, action)
+            score = self.minValue(successorGameState, 1, 0)
+            if score > maxScore:
+                maxScore = score
+                move = action
+        return move
+
+    def minValue(self, gameState, agentIndex, depth):
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+        legalMoves = gameState.getLegalActions(agentIndex)
+        avg = 0
+        prob = 1 / (len(legalMoves))
+        for action in legalMoves:
+            successorGameState = gameState.generateSuccessor(agentIndex, action)
+            if agentIndex != gameState.getNumAgents() - 1:
+                avg = avg + prob * self.minValue(successorGameState, agentIndex + 1, depth)
+            else:
+                avg = avg + prob * self.maxValue(successorGameState, 0, depth + 1)
+        return avg
+
+    def maxValue(self, gameState, agentIndex, depth):
+        if gameState.isWin() or gameState.isLose() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+        legalMoves = gameState.getLegalActions(agentIndex)
+        maxScore = float("-inf")
+        for action in legalMoves:
+            successorGameState = gameState.generateSuccessor(agentIndex, action)
+            maxScore = max(maxScore, self.minValue(successorGameState, agentIndex + 1, depth))
+        return maxScore
 
 
 def betterEvaluationFunction(currentGameState):
@@ -268,7 +302,6 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
 
 
 # Abbreviation
