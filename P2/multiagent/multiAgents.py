@@ -299,7 +299,11 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION:
+    Similar to Q-1 , I added inverse manhattan distances of all the foods to the currentGame state score.
+    To make pacman eat other pallet that makes ghost scared, I added the scared time of all the ghosts in that state.
+    If the ghost is in scared state, pacman is rewarded more to eat a ghost
+    or else subtracting the manhattan distances of all the scared ghosts to promote eating of ghosts.
     """
     "*** YOUR CODE HERE ***"
     pos = currentGameState.getPacmanPosition()
@@ -311,8 +315,9 @@ def betterEvaluationFunction(currentGameState):
     score = currentGameState.getScore()
     if not foodList:
         return score
+    for food in foodList:
+        score = score + (1 / util.manhattanDistance(food, pos))
     for time in scaredTimes:
-        if time > 0:
             score = score + time
     for ghost in ghosts:
         if ghost.scaredTimer > 0:
@@ -320,9 +325,6 @@ def betterEvaluationFunction(currentGameState):
                 score += 1000
             else:
                 score = score - manhattanDistance(ghost.configuration.pos, pos)
-    for food in foodList:
-        score = score + (1 / util.manhattanDistance(food, pos))
-
     return score
 
 
