@@ -80,9 +80,8 @@ class ReflexAgent(Agent):
             score = score - 10000
         if not foodList:
             return score
-
-        minManhattan = min(util.manhattanDistance(newPos, food) for food in foodList)
-        score = score + (1 / minManhattan)
+        for food in foodList:
+            score = score + (1 / util.manhattanDistance(food, newPos))
 
         return score
 
