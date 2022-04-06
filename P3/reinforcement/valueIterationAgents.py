@@ -92,7 +92,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         sum = 0.0
         for (nextState, prob) in self.mdp.getTransitionStatesAndProbs(state, action):
             sum = sum + ((prob) * (
-                        self.mdp.getReward(state, action, nextState) + (self.discount * self.values[nextState])))
+                    self.mdp.getReward(state, action, nextState) + (self.discount * self.values[nextState])))
         return sum
         # util.raiseNotDefined()
 
@@ -156,6 +156,19 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+        states = self.mdp.getStates()
+        numStates = len(states)
+        index = 0
+        for i in range(0, self.iterations):
+            possibleActions = self.mdp.getPossibleActions(states[index])
+            if len(possibleActions) == 0:
+                self.values[states[index]] = 0
+            else:
+                maxVal = float("-inf")
+                for action in possibleActions:
+                    maxVal = max(maxVal, self.computeQValueFromValues(states[index], action))
+                self.values[states[index]] = maxVal
+            index = (index + 1) % numStates
 
 
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
