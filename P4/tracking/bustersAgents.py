@@ -143,4 +143,23 @@ class GreedyBustersAgent(BustersAgent):
         livingGhostPositionDistributions = \
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
-        "*** YOUR CODE HERE ***"
+        ghostPositions = []
+        for distribution in livingGhostPositionDistributions:
+            maxP = float("-inf")
+            maxPos = None
+            for pos in distribution:
+                if distribution[pos]> maxP:
+                    maxP = distribution[pos]
+                    maxPos = pos
+            ghostPositions.append(maxPos)
+
+        minVal = float("inf")
+        minAction = None
+        for action in legal:
+            successorPosition = Actions.getSuccessor(pacmanPosition, action)
+            for ghostPosition in ghostPositions:
+                distance = self.distancer.getDistance(successorPosition, ghostPosition)
+                if distance < minVal:
+                    minVal = distance
+                    minAction = action
+        return minAction

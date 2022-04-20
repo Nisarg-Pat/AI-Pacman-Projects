@@ -298,7 +298,7 @@ class ExactInference(InferenceModule):
         """
         "*** YOUR CODE HERE ***"
         allPositions = DiscreteDistribution()
-        for position in self.legalPositions:
+        for position in self.allPositions:
             observationProb = self.getObservationProb(observation, gameState.getPacmanPosition(), position,
                                                       self.getJailPosition())
             allPositions[position] = observationProb * self.beliefs[position]
