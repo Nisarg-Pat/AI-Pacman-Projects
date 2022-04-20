@@ -316,6 +316,8 @@ class ExactInference(InferenceModule):
         """
         "*** YOUR CODE HERE ***"
         allPositions = DiscreteDistribution()
+
+        # Creating newPosDist[newPos][oldPos] keeping P(newPos|oldPos) values.
         newPosDist = {}
         for oldPos in self.allPositions:
             dist = self.getPositionDistribution(gameState, oldPos)
@@ -323,11 +325,14 @@ class ExactInference(InferenceModule):
                 if newPos not in newPosDist:
                     newPosDist[newPos] = {}
                 newPosDist[newPos][oldPos] = dist[newPos]
+
+        # Updating the beliefs for newPos.
         for newPos in newPosDist:
             sum = 0.0
             for oldPos in newPosDist[newPos]:
                 sum = sum + (newPosDist[newPos][oldPos] * self.beliefs[oldPos])
             allPositions[newPos] = sum
+
         self.beliefs = allPositions
         self.beliefs.normalize()
 
