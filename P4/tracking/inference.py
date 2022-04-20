@@ -16,6 +16,7 @@ import itertools
 import random
 import busters
 import game
+from P4.tracking import util
 
 from util import manhattanDistance, raiseNotDefined
 
@@ -77,6 +78,8 @@ class DiscreteDistribution(dict):
         """
         "*** YOUR CODE HERE ***"
         tot = float(self.total())
+        if tot == 0.0:
+            return
         for key in self.keys():
             self[key] = self[key] / tot
 
@@ -295,8 +298,12 @@ class ExactInference(InferenceModule):
         position is known.
         """
         "*** YOUR CODE HERE ***"
-        raiseNotDefined()
-
+        allPositions = DiscreteDistribution()
+        for position in self.legalPositions:
+            observationProb = self.getObservationProb(observation, gameState.getPacmanPosition(), position,
+                                                      self.getJailPosition())
+            allPositions[position] = observationProb * self.beliefs[position]
+        self.beliefs = allPositions
         self.beliefs.normalize()
 
     def elapseTime(self, gameState):
