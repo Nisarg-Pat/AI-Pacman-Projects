@@ -19,25 +19,34 @@ from keyboardAgents import KeyboardAgent
 import inference
 import busters
 
+
 class NullGraphics:
     "Placeholder for graphics"
-    def initialize(self, state, isBlue = False):
+
+    def initialize(self, state, isBlue=False):
         pass
+
     def update(self, state):
         pass
+
     def pause(self):
         pass
+
     def draw(self, state):
         pass
+
     def updateDistributions(self, dist):
         pass
+
     def finish(self):
         pass
+
 
 class KeyboardInference(inference.InferenceModule):
     """
     Basic inference module for use with the keyboard.
     """
+
     def initializeUniformly(self, gameState):
         "Begin with a uniform distribution over ghost positions."
         self.beliefs = util.Counter()
@@ -66,7 +75,8 @@ class KeyboardInference(inference.InferenceModule):
 class BustersAgent:
     "An agent that tracks and displays its beliefs about ghost positions."
 
-    def __init__( self, index = 0, inference = "ExactInference", ghostAgents = None, observeEnable = True, elapseTimeEnable = True):
+    def __init__(self, index=0, inference="ExactInference", ghostAgents=None, observeEnable=True,
+                 elapseTimeEnable=True):
         try:
             inferenceType = util.lookup(inference, globals())
         except Exception:
@@ -106,10 +116,11 @@ class BustersAgent:
         "By default, a BustersAgent just stops.  This should be overridden."
         return Directions.STOP
 
+
 class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
     "An agent controlled by the keyboard that displays beliefs about ghost positions."
 
-    def __init__(self, index = 0, inference = "KeyboardInference", ghostAgents = None):
+    def __init__(self, index=0, inference="KeyboardInference", ghostAgents=None):
         KeyboardAgent.__init__(self, index)
         BustersAgent.__init__(self, index, inference, ghostAgents)
 
@@ -119,9 +130,11 @@ class BustersKeyboardAgent(BustersAgent, KeyboardAgent):
     def chooseAction(self, gameState):
         return KeyboardAgent.getAction(self, gameState)
 
+
 from distanceCalculator import Distancer
 from game import Actions
 from game import Directions
+
 
 class GreedyBustersAgent(BustersAgent):
     "An agent that charges the closest ghost."
@@ -142,17 +155,20 @@ class GreedyBustersAgent(BustersAgent):
         livingGhosts = gameState.getLivingGhosts()
         livingGhostPositionDistributions = \
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
-             if livingGhosts[i+1]]
+             if livingGhosts[i + 1]]
+
+        # Selecting maximum probability position for each ghost
         ghostPositions = []
         for distribution in livingGhostPositionDistributions:
             maxP = float("-inf")
             maxPos = None
             for pos in distribution:
-                if distribution[pos]> maxP:
+                if distribution[pos] > maxP:
                     maxP = distribution[pos]
                     maxPos = pos
             ghostPositions.append(maxPos)
 
+        # Selecting action that bring closest to the closest ghost
         minVal = float("inf")
         minAction = None
         for action in legal:
