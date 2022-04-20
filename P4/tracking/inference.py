@@ -16,7 +16,6 @@ import itertools
 import random
 import busters
 import game
-from P4.tracking import util
 
 from util import manhattanDistance, raiseNotDefined
 
